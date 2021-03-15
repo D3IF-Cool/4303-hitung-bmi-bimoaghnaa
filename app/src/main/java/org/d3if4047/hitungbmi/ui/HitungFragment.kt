@@ -1,5 +1,6 @@
 package org.d3if4047.hitungbmi.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.*
@@ -40,9 +41,31 @@ class HitungFragment : Fragment() {
 
             )
         }
+        binding.shareButton.setOnClickListener { shareData() }
         setHasOptionsMenu(true)
         return binding.root
     }
+    private fun shareData() {
+        val selectedId = binding.radioGroup.checkedRadioButtonId
+        val gender = if (selectedId == R.id.priaRadioButton)
+            getString(R.string.pria)
+        else
+            getString(R.string.wanita)
+        val message = getString(R.string.bagikan_template,
+            binding.beratEditText.text,
+            binding.tinggiEditText.text,
+            gender,
+            binding.bmiTextView.text,
+            binding.kategoriTextView.text
+        )
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.setType("text/plain").putExtra(Intent.EXTRA_TEXT, message)
+        if (shareIntent.resolveActivity(
+                requireActivity().packageManager) != null) {
+            startActivity(shareIntent)
+        }
+    }
+
 
     private fun hitungBmi() {
         val berat = binding.beratEditText.text.toString()
